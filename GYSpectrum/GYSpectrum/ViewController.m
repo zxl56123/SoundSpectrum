@@ -20,7 +20,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    SpectrumView * spectrumView2 = [[SpectrumView alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.frame)-150,240,300, 60.0)];
+    CGFloat length = self.view.frame.size.width*0.324;
+    SpectrumView * spectrumView2 = [[SpectrumView alloc] initWithFrame:CGRectMake( (self.view.frame.size.width - length)/2.0 ,180,length, length)];
     spectrumView2.text = @"zxl test";//[NSString stringWithFormat:@"%d",0];
     __weak SpectrumView * weakSpectrum2 = spectrumView2;
     spectrumView2.itemLevelCallback = ^() {

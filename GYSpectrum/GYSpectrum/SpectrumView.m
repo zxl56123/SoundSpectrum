@@ -57,7 +57,7 @@
     
     self.itemArray = [NSMutableArray new];
     
-    self.numberOfItems = 40;//偶数
+    self.numberOfItems = 24;//偶数
    
     self.itemColor = [UIColor whiteColor];//[UIColor colorWithRed:241/255.f green:60/255.f blue:57/255.f alpha:1.0];
 
@@ -71,7 +71,7 @@
     [self addSubview:self.timeLabel];
     
     self.levelArray = [[NSMutableArray alloc]init];
-    for(int i = 0 ; i < self.numberOfItems/2 ; i++){
+    for(int i = 0 ; i < self.numberOfItems ; i++){
         [self.levelArray addObject:@(1)];
     }
 }
@@ -93,7 +93,7 @@
         itemline.lineJoin      = kCALineJoinRound;
         itemline.strokeColor   = [[UIColor clearColor] CGColor];
         itemline.fillColor     = [[UIColor clearColor] CGColor];
-        [itemline setLineWidth:self.itemWidth*0.4/self.numberOfItems];
+        [itemline setLineWidth:self.itemWidth/self.numberOfItems];
         itemline.strokeColor   = [self.itemColor CGColor];
         
         [self.layer addSublayer:itemline];
@@ -109,8 +109,10 @@
     level = (level+37.5)*3.2;
     if( level < 0 ) level = 0;
 
-    [self.levelArray removeObjectAtIndex:self.numberOfItems/2-1];
+    [self.levelArray removeObjectAtIndex:self.numberOfItems-1];
     [self.levelArray insertObject:@((level / 6) < 1 ? 1 : level / 6) atIndex:0];
+    
+    NSLog(@"levelArray -- %lf",(level / 6) < 1 ? 1 : level / 6);
     
     [self updateItems];
     
@@ -128,42 +130,33 @@
     
     UIGraphicsBeginImageContext(self.frame.size);
     
-    int x = self.itemWidth*0.8/self.numberOfItems;
-    int z = self.itemWidth*0.2/self.numberOfItems;
-    int y = self.itemWidth*0.6 - z;
+    int x = self.itemWidth*0.8/self.numberOfItems + 4;
+    int z = self.itemWidth*0.6/self.numberOfItems;
+    int y; //= self.itemWidth*1 - z;
+    y = 0;
     
-    for(int i=0; i < (self.numberOfItems / 2); i++) {
-        
+    for(int i=0; i < (self.numberOfItems) -1; i++) {
+    
         UIBezierPath *itemLinePath = [UIBezierPath bezierPath];
         
         y += x;
         
-        [itemLinePath moveToPoint:CGPointMake(y, self.itemHeight/2+([[self.levelArray objectAtIndex:i]intValue]+1)*z/2)];
+        if ([[self.levelArray objectAtIndex:i] intValue] == 1) {
+            [itemLinePath moveToPoint:CGPointMake(y, self.itemHeight/2+([[self.levelArray objectAtIndex:i]intValue]+1)*0.1)];
+            
+            [itemLinePath addLineToPoint:CGPointMake(y, self.itemHeight/2-([[self.levelArray objectAtIndex:i]intValue]+1)*0.1)];
+            
+        }else{
+            [itemLinePath moveToPoint:CGPointMake(y, self.itemHeight/2+([[self.levelArray objectAtIndex:i]intValue]+1)*z)];
         
-        [itemLinePath addLineToPoint:CGPointMake(y, self.itemHeight/2-([[self.levelArray objectAtIndex:i]intValue]+1)*z/2)];
-        
-        CAShapeLayer *itemLine = [self.itemArray objectAtIndex:i];
-        itemLine.path = [itemLinePath CGPath];
-        
-    }
-    
-    
-    y = self.itemWidth*0.4 + z;
-    
-    for(int i = (int)self.numberOfItems / 2; i < self.numberOfItems; i++) {
-        
-        UIBezierPath *itemLinePath = [UIBezierPath bezierPath];
-        
-        y -= x;
-        
-        [itemLinePath moveToPoint:CGPointMake(y, self.itemHeight/2+([[self.levelArray objectAtIndex:i-self.numberOfItems/2]intValue]+1)*z/2)];
-        
-        [itemLinePath addLineToPoint:CGPointMake(y, self.itemHeight/2-([[self.levelArray objectAtIndex:i-self.numberOfItems/2]intValue]+1)*z/2)];
+            [itemLinePath addLineToPoint:CGPointMake(y, self.itemHeight/2-([[self.levelArray objectAtIndex:i]intValue]+1)*z)];
+        }
         
         CAShapeLayer *itemLine = [self.itemArray objectAtIndex:i];
         itemLine.path = [itemLinePath CGPath];
         
     }
+    
     
     UIGraphicsEndImageContext();
 }
